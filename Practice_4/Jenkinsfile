@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        VENV = "${WORKSPACE}/.venv"
+        PROJECT_DIR = "Practice_4"
+        VENV = "${WORKSPACE}/Practice_4/.venv"
         SERVICE_PORT = "8000"
         PYTHONUNBUFFERED = "1"
     }
@@ -10,73 +11,83 @@ pipeline {
     stages {
         stage('Prepare environment') {
             steps {
-                sh '''
-                    set -eux
-                    python3 -m venv "$VENV"
-                    . "$VENV/bin/activate"
-                    python -m pip install --upgrade pip
-                    pip install -r requirements.txt
-                '''
+                dir("${PROJECT_DIR}") {
+                    sh '''
+                        set -eux
+                        python3 -m venv "$VENV"
+                        . "$VENV/bin/activate"
+                        python -m pip install --upgrade pip
+                        pip install -r requirements.txt
+                    '''
+                }
             }
         }
 
         stage('Download and prepare data') {
             steps {
-                sh '''
-                    set -eux
-                    . "$VENV/bin/activate"
-                    python download.py
-                '''
+                dir("${PROJECT_DIR}") {
+                    sh '''
+                        set -eux
+                        . "$VENV/bin/activate"
+                        python download.py
+                    '''
+                }
             }
         }
 
         stage('Train model') {
             steps {
-                sh '''
-                    set -eux
-                    . "$VENV/bin/activate"
-                    python train_model.py
-                '''
+                dir("${PROJECT_DIR}") {
+                    sh '''
+                        set -eux
+                        . "$VENV/bin/activate"
+                        python train_model.py
+                    '''
+                }
             }
         }
 
         stage('Deploy service') {
             steps {
-                sh '''
-                    set -eux
-                    . "$VENV/bin/activate"
+                dir("${PROJECT_DIR}") {
+                    sh '''
+                        set -eux
+                        . "$VENV/bin/activate"
 
-                    export BUILD_ID=dontKillMe
-                    export JENKINS_NODE_COOKIE=dontKillMe
+                        export BUILD_ID=dontKillMe
+                        export JENKINS_NODE_COOKIE=dontKillMe
 
-                    if [ -f service.pid ]; then
-                        kill "$(cat service.pid)" || true
-                        rm -f service.pid
-                    fi
+                        if [ -f service.pid ]; then
+                            kill "$(cat service.pid)" || true
+                            rm -f service.pid
+                        fi
 
-                    nohup uvicorn app:app --host 0.0.0.0 --port "$SERVICE_PORT" > service.log 2>&1 &
-                    echo $! > service.pid
+                        nohup uvicorn app:app --host 0.0.0.0 --port "$SERVICE_PORT" > service.log 2>&1 &
+                        echo $! > service.pid
 
-                    sleep 8
-                    cat service.log || true
-                '''
+                        sleep 8
+                        cat service.log || true
+                    '''
+                }
             }
         }
 
         stage('Test service') {
             steps {
-                sh '''
-                    set -eux
-                    . "$VENV/bin/activate"
-                    python test_service.py
-                '''
+                dir("${PROJECT_DIR}") {
+                    sh '''
+                        set -eux
+                        . "$VENV/bin/activate"
+                        python test_service.py
+                    '''
+                }
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: '*.csv,*.pkl,*.json,*.log,service.pid,mlruns/**', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'Practice_4/*.csv,Practice_4/*.pkl,Practice_4/*.json,Practice_4/*.log,Practice_4/service.pid,Practice_4/mlruns/**', allowEmptyArchive: true
         }
     }
 }
