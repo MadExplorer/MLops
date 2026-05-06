@@ -1,0 +1,48 @@
+stages:
+  prepare:
+    cmd: python src/stages/prepare_dataset.py
+    deps:
+      - data/titanic_raw.csv
+      - src/stages/prepare_dataset.py
+      - src/config.yaml
+    outs:
+      - data/titanic_clean.csv
+
+  featurize:
+    cmd: python src/stages/featurize.py
+    deps:
+      - data/titanic_raw.csv
+      - src/stages/featurize.py
+      - src/config.yaml
+    outs:
+      - data/titanic_features.csv
+
+  data_split:
+    cmd: python src/stages/data_split.py
+    deps:
+      - data/titanic_features.csv
+      - src/stages/data_split.py
+      - src/config.yaml
+    outs:
+      - data/train_titanic.csv
+      - data/test_titanic.csv
+
+  train:
+    cmd: python src/stages/train.py
+    deps:
+      - data/train_titanic.csv
+      - src/stages/train.py
+      - src/config.yaml
+    outs:
+      - models/titanic_model.joblib
+
+  evaluate:
+    cmd: python src/stages/evaluate.py
+    deps:
+      - models/titanic_model.joblib
+      - data/test_titanic.csv
+      - src/stages/evaluate.py
+      - src/config.yaml
+    metrics:
+      - dvclive/metrics.json:
+          cache: false

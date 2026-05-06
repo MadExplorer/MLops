@@ -1,0 +1,110 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/stages/prepare_dataset.py
+    deps:
+    - path: data/titanic_raw.csv
+      hash: md5
+      md5: 2309cc5f04782ed9bb6016d9f4e381cf
+      size: 61194
+    - path: src/config.yaml
+      hash: md5
+      md5: 285b3f31810db0f65a484bd8d7f32992
+      size: 550
+    - path: src/stages/prepare_dataset.py
+      hash: md5
+      md5: 0953753b9870fe12eec37b2e8ef4fda1
+      size: 723
+    outs:
+    - path: data/titanic_clean.csv
+      hash: md5
+      md5: f652ec483e9ee589df575f309fdffeda
+      size: 27360
+  featurize:
+    cmd: python src/stages/featurize.py
+    deps:
+    - path: data/titanic_raw.csv
+      hash: md5
+      md5: 2309cc5f04782ed9bb6016d9f4e381cf
+      size: 61194
+    - path: src/config.yaml
+      hash: md5
+      md5: 285b3f31810db0f65a484bd8d7f32992
+      size: 550
+    - path: src/stages/featurize.py
+      hash: md5
+      md5: d192cccf4d867d94495db5366cd7d954
+      size: 1214
+    outs:
+    - path: data/titanic_features.csv
+      hash: md5
+      md5: 7deb09acd2292518fd89d91902bdfa20
+      size: 120090
+  data_split:
+    cmd: python src/stages/data_split.py
+    deps:
+    - path: data/titanic_features.csv
+      hash: md5
+      md5: 7deb09acd2292518fd89d91902bdfa20
+      size: 120090
+    - path: src/config.yaml
+      hash: md5
+      md5: 285b3f31810db0f65a484bd8d7f32992
+      size: 550
+    - path: src/stages/data_split.py
+      hash: md5
+      md5: 89ab0b1a6043c136ffa34ebc30eed1f7
+      size: 650
+    outs:
+    - path: data/test_titanic.csv
+      hash: md5
+      md5: 2913f1138992f182ce236d2bc1301eaf
+      size: 36345
+    - path: data/train_titanic.csv
+      hash: md5
+      md5: 1d86e3991aa0a80bf5b3b3ede2ac0a2c
+      size: 84011
+  train:
+    cmd: python src/stages/train.py
+    deps:
+    - path: data/train_titanic.csv
+      hash: md5
+      md5: 1d86e3991aa0a80bf5b3b3ede2ac0a2c
+      size: 84011
+    - path: src/config.yaml
+      hash: md5
+      md5: 285b3f31810db0f65a484bd8d7f32992
+      size: 550
+    - path: src/stages/train.py
+      hash: md5
+      md5: f52fbac1af3d3d8aefcba695673a1b35
+      size: 734
+    outs:
+    - path: models/titanic_model.joblib
+      hash: md5
+      md5: 34b9d1f2d0bdfe4351ad8d21ea3e6261
+      size: 409033
+  evaluate:
+    cmd: python src/stages/evaluate.py
+    deps:
+    - path: data/test_titanic.csv
+      hash: md5
+      md5: 2913f1138992f182ce236d2bc1301eaf
+      size: 36345
+    - path: models/titanic_model.joblib
+      hash: md5
+      md5: 34b9d1f2d0bdfe4351ad8d21ea3e6261
+      size: 409033
+    - path: src/config.yaml
+      hash: md5
+      md5: 285b3f31810db0f65a484bd8d7f32992
+      size: 550
+    - path: src/stages/evaluate.py
+      hash: md5
+      md5: 39739e0a92881c1c7b276538d4972508
+      size: 1021
+    outs:
+    - path: dvclive/metrics.json
+      hash: md5
+      md5: 540077e3a8f3c06e1ab0a6d0b846d153
+      size: 137
