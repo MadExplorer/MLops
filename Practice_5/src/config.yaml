@@ -20,6 +20,28 @@ train:
   max_depth: 5
   model_path: "models/titanic_model.joblib"
 
+data:
+  raw: "data/titanic_raw.csv"
+
+prepare:
+  output: "data/titanic_clean.csv"
+
+featurize:
+  input: "data/titanic_clean.csv"
+  output: "data/titanic_features.csv"
+
+data_split:
+  input: "data/titanic_features.csv"
+  test_size: 0.3
+  trainset: "data/train_titanic.csv"
+  testset: "data/test_titanic.csv"
+
+train:
+  model_type: "random_forest"
+  n_estimators: 100
+  max_depth: 5
+  model_path: "models/titanic_model.joblib"
+
 evaluate:
   model_path: "models/titanic_model.joblib"
   testset: "data/test_titanic.csv"
