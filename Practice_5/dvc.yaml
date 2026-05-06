@@ -41,8 +41,5 @@ stages:
     deps:
       - models/titanic_model.joblib
       - data/test_titanic.csv
-      - src/stages/evaluate.py
-      - src/config.yaml
-    metrics:
-      - dvclive/metrics.json:
-          cache: false
+    outs:
+      - metrics.txt
