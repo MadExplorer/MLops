@@ -20,9 +20,6 @@ def main():
     df['Age'] = df['Age'].fillna(df['Age'].median())
     df['Embarked'] = df['Embarked'].fillna(df['Embarked'].mode()[0])
 
-# featurize.py
-categorical_cols = df.select_dtypes(include='string').columns.tolist()
-
     df.drop(['Ticket', 'Cabin', 'Name'], axis=1, inplace=True)
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
