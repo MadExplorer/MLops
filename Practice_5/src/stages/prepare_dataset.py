@@ -16,8 +16,8 @@ def main():
 
     df.drop_duplicates(inplace=True)
 
-    df['Age'].fillna(df['Age'].median(), inplace=True)
-    df['Embarked'].fillna(df['Embarked'].mode()[0], inplace=True)
+    df['Age'] = df['Age'].fillna(df['Age'].median())
+    df['Embarked'] = df['Embarked'].fillna(df['Embarked'].mode()[0])
 
     df.drop(['Ticket', 'Cabin', 'Name'], axis=1, inplace=True)
 
