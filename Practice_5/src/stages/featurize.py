@@ -23,7 +23,7 @@ def main():
 
     df.drop(['Ticket', 'Cabin', 'Name', 'SibSp', 'Parch'], axis=1, inplace=True)
 
-    categorical_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
+    categorical_cols = df.select_dtypes(include='string').columns.tolist()
     if 'Survived' in categorical_cols:
         categorical_cols.remove('Survived')
 
